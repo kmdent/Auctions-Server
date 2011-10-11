@@ -14,8 +14,11 @@ public:
     int id;
     bool isSuper;
     bool isSeq;
-    Agent(int);
-    int bid(int);
+    Agent(int i);
+    virtual int bid(int i);
+
+private:
+    int valuation;
 };
 
 #endif // AGENT_H

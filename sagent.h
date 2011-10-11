@@ -5,7 +5,9 @@
 class sAgent: public Agent
 {
 public:
-    sAgent(int);
+    sAgent(int i);
+    virtual ~sAgent();
+    int bid(int i);
 };
 
 #endif // SAGENT_H
