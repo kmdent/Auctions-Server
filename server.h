@@ -9,6 +9,7 @@ public:
     int numAgents;
     bool isSuper;
     bool isSequential;
+    int highBidder;
     vector<Agent*> agents;
 
     Server();

@@ -23,10 +23,16 @@ void Server::runAscending(){
 
     for(int i = 0; i < numAgents; i++){
         agents.push_back(new aAgent(i));
+        agents.at(i)->numBidders = numAgents;
+        agents.at(i)->isSuper = isSuper;
+        agents.at(i)->isSeq = isSequential;
     }
 
     while(!isOver){
+        int askPrice = .05;
         for(int i = 0; i < agents.size(); i++){
+            agents.at(i)->highBid = highBidder;
+            (*agents.at(i)).bid(askPrice);
 
         }
     }
