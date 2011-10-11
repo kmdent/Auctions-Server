@@ -32,7 +32,7 @@ void Server::runAscending(){
         int askPrice = .05;
         for(int i = 0; i < agents.size(); i++){
             agents.at(i)->highBid = highBidder;
-            (*agents.at(i)).bid(askPrice);
+            agents.at(i)->bid(askPrice);
 
         }
     }
@@ -56,16 +56,16 @@ void Server::runDescending(){
 void Server::runSealedPrice(){
 
     bool isOver = false;
-
+    int askprice = 0;
+    vector<int> prices;
     for(int i = 0; i < numAgents; i++){
         agents.push_back(new sAgent(i));
     }
 
-    while(!isOver){
-        for(int i = 0; i < agents.size(); i++){
-
-        }
+    for(int i = 0; i < agents.size(); i++){
+        prices.push_back(agents.at(i)->bid(askprice));
     }
+
 
 
 }
