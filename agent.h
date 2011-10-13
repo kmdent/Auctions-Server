@@ -12,13 +12,14 @@ public:
     int highBid;
     int ask;
     int id;
+    float payment;
     bool isSuper;
     bool isSeq;
+    float valuation;
     Agent(int i);
-    virtual int bid(int i);
+    int bid(int i);
 
-private:
-    int valuation;
+protected:
 };
 
 #endif // AGENT_H

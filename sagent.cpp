@@ -1,4 +1,5 @@
 #include "sagent.h"
+#include "iostream"
 
 sAgent::sAgent(int id) : Agent(id)
 {
@@ -8,6 +9,9 @@ sAgent::~sAgent(){
 
 }
 
-int sAgent::bid(int i){
-    return i;
+float sAgent::bid(int i){
+    if(firstPrice){
+        return (((numBidders-1)*valuation)/numBidders);
+    }
+    else return valuation;
 }
