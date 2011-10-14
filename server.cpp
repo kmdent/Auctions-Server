@@ -60,6 +60,7 @@ void Server::runSealedPrice(){
     float highestBid = 0;
     float secondPrice = 0;
     highBidder = 0;
+
     for(int i = 0; i < numAgents; i++){
         agents.push_back(new sAgent(i));
         agents.at(i)->numBidders = numAgents;
@@ -67,7 +68,6 @@ void Server::runSealedPrice(){
     }
     for(int i = 0; i < agents.size(); i++){
         prices.push_back(((sAgent*)(agents.at(i)))->bid(0));
-        cout << prices.at(i) << endl;
     }
     for(int i = 0; i < agents.size(); i++){
         if(prices.at(i) > highestBid){
@@ -78,6 +78,7 @@ void Server::runSealedPrice(){
             secondPrice = prices.at(i);
         }
     }
+    cout << "-------------------------Auction Results__________________________"<<endl;
     cout << "highest bidder: " << highBidder << endl;
     cout << "highest bid: " << highestBid << endl;
     for(int i = 0; i<agents.size(); i++){
@@ -90,7 +91,7 @@ void Server::runSealedPrice(){
         else agents.at(i)->payment = 0;
     }
     for(int i = 0; i < numAgents; i++){
-        cout << agents.at(i)->valuation << "   " << agents.at(i)->payment << endl;
+        cout <<"Bidder " << i << "{ "<< "Value: " << agents.at(i)->valuation << ", Bid: " <<((sAgent*) agents.at(i))->_bid << ", Payed: "<< agents.at(i)->payment << "}"<<endl;
     }
 
 }

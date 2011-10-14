@@ -11,7 +11,9 @@ sAgent::~sAgent(){
 
 float sAgent::bid(int i){
     if(firstPrice){
-        return (((numBidders-1)*valuation)/numBidders);
+        _bid = (((numBidders-1)*valuation)/numBidders);
+    }else{
+        _bid = valuation;
     }
-    else return valuation;
+    return _bid;
 }

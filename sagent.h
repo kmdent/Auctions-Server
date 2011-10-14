@@ -9,6 +9,7 @@ public:
     virtual ~sAgent();
     float bid(int i);
     bool firstPrice;
+    float _bid;
 
 };
 

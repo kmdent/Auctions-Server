@@ -3,10 +3,11 @@
 #include "iostream"
 
 
+
 Agent::Agent(int tmp)
 {
     id = tmp;
-    valuation = ((float)rand() / (float)RAND_MAX);
+    valuation = ((float)rand() / (float)(RAND_MAX));
     payment = 0;
 }
 
