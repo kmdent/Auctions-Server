@@ -9,7 +9,7 @@ aAgent::~aAgent(){
 
 }
 
-int aAgent::bid(int ask){
+float aAgent::bid(float ask){
     return ask;
 }
 

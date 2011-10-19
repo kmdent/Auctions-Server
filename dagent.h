@@ -7,7 +7,8 @@ class dAgent: public Agent
 public:
     dAgent(int i);
     virtual ~dAgent();
-    int bid(int i);
+    float bid(float i);
+    float _bid;
 };
 
 #endif // DAGENT_H

@@ -9,7 +9,7 @@ sAgent::~sAgent(){
 
 }
 
-float sAgent::bid(int i){
+float sAgent::bid(float i){
     if(firstPrice){
         _bid = (((numBidders-1)*valuation)/numBidders);
     }else{

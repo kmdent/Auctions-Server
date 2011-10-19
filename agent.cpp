@@ -11,6 +11,6 @@ Agent::Agent(int tmp)
     payment = 0;
 }
 
-int Agent::bid(int i){
+float Agent::bid(float i){
     return i;
 }

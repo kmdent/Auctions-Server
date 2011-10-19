@@ -7,7 +7,7 @@ class sAgent: public Agent
 public:
     sAgent(int i);
     virtual ~sAgent();
-    float bid(int i);
+    float bid(float i);
     bool firstPrice;
     float _bid;
 

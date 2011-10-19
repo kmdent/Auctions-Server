@@ -42,16 +42,30 @@ void Server::runAscending(){
 void Server::runDescending(){
 
     bool isOver = false;
+    float currPrice = 1;
+    float decrement = currPrice * .05;
 
     for(int i = 0; i < numAgents; i++){
         agents.push_back(new dAgent(i));
     }
 
     while(!isOver){
-        for(int i = 0; i < agents.size(); i++){
-
+        for(int i = 0; i < numAgents; i++){
+            float tmpBid = 0;
+            tmpBid = ((dAgent*)agents.at(i))->bid(currPrice);
+            if(tmpBid != 0){
+                isOver = true;
+                ((dAgent*)agents.at(i))->payment = tmpBid;
+                break;
+            }
         }
+        cout <<"No bidders at: "<<currPrice << " , reducing the price to: " << (currPrice-decrement)<< endl;
+        currPrice = currPrice- decrement;
     }
+    for(int i = 0; i < numAgents; i++){
+        cout <<"Bidder " << i << "{ "<< "Value: " << agents.at(i)->valuation << ", Bid: " <<((dAgent*) agents.at(i))->_bid << ", Paid: "<< agents.at(i)->payment <<", Profit: " <<((dAgent*) agents.at(i))->valuation - ((dAgent *)agents.at(i))->payment <<"}"<<endl;
+    }
+
 }
 
 void Server::runSealedPrice(){
@@ -91,7 +105,7 @@ void Server::runSealedPrice(){
         else agents.at(i)->payment = 0;
     }
     for(int i = 0; i < numAgents; i++){
-        cout <<"Bidder " << i << "{ "<< "Value: " << agents.at(i)->valuation << ", Bid: " <<((sAgent*) agents.at(i))->_bid << ", Payed: "<< agents.at(i)->payment << "}"<<endl;
+        cout <<"Bidder " << i << "{ "<< "Value: " << agents.at(i)->valuation << ", Bid: " <<((sAgent*) agents.at(i))->_bid << ", Paid: "<< agents.at(i)->payment << "}"<<endl;
     }
 
 }
@@ -127,12 +141,12 @@ int main(int argc, char *argv[]){
     cout << "Enter the number of Bidders" << endl;
     cin >> server->numAgents;
 
-    if(!aType.compare("Ascending")){
+    if(!aType.compare("Ascending") || !aType.compare("A")){
         cout << "running ascending" << endl;
         server->runAscending();
-    }else if(!aType.compare("Descending")){
+    }else if(!aType.compare("Descending")|| !aType.compare("D")){
         server->runDescending();
-    }else if(!aType.compare("Sealed")){
+    }else if(!aType.compare("Sealed") || !aType.compare("S")){
         cout << "1st or 2nd price?" << endl;
         cin >> price;
         if(! price.compare("1st")){

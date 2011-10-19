@@ -17,7 +17,7 @@ public:
     bool isSeq;
     float valuation;
     Agent(int i);
-    int bid(int i);
+    float bid(float i);
 
 protected:
 };
