@@ -11,13 +11,20 @@ public:
     bool isSequential;
     bool firstPrice;
     int highBidder;
+    int numGoods;
     vector<Agent*> agents;
+
 
     Server();
     virtual ~Server();
     void runAscending();
     void runDescending();
     void runSealedPrice();
+
+private:
+    vector<int> highBidders;
+    vector<float> winningPrices;
+    vector<float> askPrices;
 
 };
 

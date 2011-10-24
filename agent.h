@@ -2,6 +2,7 @@
 #define AGENT_H
 
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -9,15 +10,16 @@ class Agent
 {
 public:
     int numBidders;
-    int highBid;
+    vector<int> highBidders;
     int ask;
     int id;
-    float payment;
+    vector<float> payments;
     bool isSuper;
     bool isSeq;
-    float valuation;
+    vector<float> valuations;
     Agent(int i);
     float bid(float i);
+    void createValuations(int numGoods);
 
 protected:
 };

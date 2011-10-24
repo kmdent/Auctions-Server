@@ -7,8 +7,13 @@
 Agent::Agent(int tmp)
 {
     id = tmp;
-    valuation = ((float)rand() / (float)(RAND_MAX));
-    payment = 0;
+}
+
+void Agent::createValuations(int numGoods){
+    for(int i = 0; i < numGoods; i++){
+        valuations.push_back(((float)rand()) / (float)(RAND_MAX));
+        payments.push_back(0);
+    }
 }
 
 float Agent::bid(float i){

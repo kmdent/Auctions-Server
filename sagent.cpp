@@ -9,11 +9,20 @@ sAgent::~sAgent(){
 
 }
 
-float sAgent::bid(float i){
-    if(firstPrice){
-        _bid = (((numBidders-1)*valuation)/numBidders);
-    }else{
-        _bid = valuation;
+vector<float> sAgent::bidSimultaneous(int numGoods){
+    vector<float> v;
+    for(int i = 0; i < numGoods; i++){
+        if(firstPrice){
+            v.push_back((valuations.at(i)*(numBidders-1)) / (float)numBidders);
+        }
+        else v.push_back(valuations.at(i));
     }
-    return _bid;
+    return v;
+}
+
+float sAgent::bidSequential(int numGoods, int round, vector<int> winners){
+    if(firstPrice){
+        return valuations.at(round)*(numBidders-1) / (float)numBidders;
+    }
+    else return valuations.at(round);
 }

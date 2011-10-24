@@ -32,9 +32,8 @@ void Server::runAscending(){
     while(!isOver){
         int askPrice = .05;
         for(int i = 0; i < agents.size(); i++){
-            agents.at(i)->highBid = highBidder;
+            agents.at(i)->highBidders.at(0) = highBidder;
             agents.at(i)->bid(askPrice);
-
         }
     }
 }
@@ -49,7 +48,7 @@ void Server::runDescending(){
         agents.push_back(new dAgent(i));
     }
 
-    while(!isOver){
+   /* while(!isOver){
         for(int i = 0; i < numAgents; i++){
             float tmpBid = 0;
             tmpBid = ((dAgent*)agents.at(i))->bid(currPrice);
@@ -63,62 +62,108 @@ void Server::runDescending(){
         currPrice = currPrice- decrement;
     }
     for(int i = 0; i < numAgents; i++){
-        cout <<"Bidder " << i << "{ "<< "Value: " << agents.at(i)->valuation << ", Bid: " <<((dAgent*) agents.at(i))->_bid << ", Paid: "<< agents.at(i)->payment <<", Profit: " <<((dAgent*) agents.at(i))->valuation - ((dAgent *)agents.at(i))->payment <<"}"<<endl;
-    }
+        //cout <<"Bidder " << i << "{ "<< "Value: " << agents.at(i)->valuations << ", Bid: " <<((dAgent*) agents.at(i))->_bid << ", Paid: "<< agents.at(i)->payment <<", Profit: " <<((dAgent*) agents.at(i))->valuation - ((dAgent *)agents.at(i))->payment <<"}"<<endl;
+    }*/
 
 }
 
 void Server::runSealedPrice(){
 
-    vector<float> prices;
-    float highestBid = 0;
-    float secondPrice = 0;
-    highBidder = 0;
+    vector<vector<float> > bids;
+    vector<int> winners;
+    vector<float> highestBids;
+    vector<float> secondPrices;
 
+    for(int i = 0; i < numGoods; i++){
+        winners.push_back(-1);
+    }
     for(int i = 0; i < numAgents; i++){
-        agents.push_back(new sAgent(i));
-        agents.at(i)->numBidders = numAgents;
-        ((sAgent*)(agents.at(i)))->firstPrice = firstPrice;
+        sAgent *s = new sAgent(i);
+        s->createValuations(numGoods);
+        s->numBidders = numAgents;
+        s->firstPrice = firstPrice;
+        agents.push_back(s);
     }
-    for(int i = 0; i < agents.size(); i++){
-        prices.push_back(((sAgent*)(agents.at(i)))->bid(0));
-    }
-    for(int i = 0; i < agents.size(); i++){
-        if(prices.at(i) > highestBid){
-            highestBid = prices.at(i);
-            highBidder = i;
+
+    if(! isSequential){ //simultaneous
+        for(int i = 0; i < agents.size(); i++){
+            bids.push_back(((sAgent*)(agents.at(i)))->bidSimultaneous(numGoods));
         }
-        else if(prices.at(i) > secondPrice){
-            secondPrice = prices.at(i);
-        }
-    }
-    cout << "-------------------------Auction Results__________________________"<<endl;
-    cout << "highest bidder: " << highBidder << endl;
-    cout << "highest bid: " << highestBid << endl;
-    for(int i = 0; i<agents.size(); i++){
-        if(i == highBidder){
-            if(firstPrice){
-                agents.at(i)->payment = highestBid;
+        for(int good = 0; good < numGoods; good++){
+            float highBid = 0;
+            float secondBid = 0;
+
+            for(int bidder = 0; bidder < agents.size(); bidder++){
+                if(bids.at(bidder).at(good) > highBid){
+                    secondBid = highBid;
+                    highBid = bids.at(bidder).at(good);
+                    winners.at(good) = bidder;
+                }
+                else if(bids.at(bidder).at(good) > secondBid){
+                    secondBid = bids.at(bidder).at(good);
+                }
             }
-            else agents.at(i)->payment = secondPrice;
+            highestBids.push_back(highBid);
+            secondPrices.push_back(secondBid);
         }
-        else agents.at(i)->payment = 0;
     }
-    for(int i = 0; i < numAgents; i++){
-        cout <<"Bidder " << i << "{ "<< "Value: " << agents.at(i)->valuation << ", Bid: " <<((sAgent*) agents.at(i))->_bid << ", Paid: "<< agents.at(i)->payment << "}"<<endl;
+    else{
+        for(int i = 0; i < numAgents; i++){
+            vector<float> v;
+            bids.push_back(v);
+        }
+        for(int round = 0; round < numGoods; round ++){
+            for(int i = 0; i < agents.size(); i++){
+                bids.at(i).push_back(((sAgent*)(agents.at(i)))->bidSequential(numGoods, round, winners));
+            }
+            float highBid = 0;
+            float secondBid = 0;
+            for(int bidder = 0; bidder < agents.size(); bidder++){
+                if(bids.at(bidder).at(round) > highBid){
+                    secondBid = highBid;
+                    highBid = bids.at(bidder).at(round);
+                    winners.at(round) = bidder;
+                }
+                else if(bids.at(bidder).at(round) > secondBid){
+                    secondBid = bids.at(bidder).at(round);
+                }
+            }
+            highestBids.push_back(highBid);
+            secondPrices.push_back(secondBid);
+        }
     }
 
+    cout << "-------------------------Auction Results__________________________"<<endl;
+    for(int good = 0; good < numGoods; good++){
+        cout << "Good " << good << endl;
+        for(int bidder = 0; bidder < numAgents; bidder++){
+            if(winners.at(good) == bidder){
+                if(firstPrice){
+                    agents.at(bidder)->payments.at(good) = highestBids.at(good);
+                }
+                else{
+                    agents.at(bidder)->payments.at(good) = secondPrices.at(good);
+                }
+            }
+            else agents.at(bidder)->payments.at(good) = 0;
+        }
+        for(int i = 0; i < numAgents; i++){
+            cout <<"Bidder " << i << "{ "<< "Value: " << agents.at(i)->valuations.at(good) << ", Bid: " << bids.at(i).at(good) << ", Paid: "<< agents.at(i)->payments.at(good) << "}"<<endl;
+        }
+    }
 }
 
 int main(int argc, char *argv[]){
-
 
     string aType;
     string super;
     string seq;
     string price;
+    string goods;
     Server * server= new Server();
+    server->numGoods = 1;
     srand(time(NULL));
+    rand();
     cout << "Enter the type of Auction" << endl;
     cin >> aType;
 
@@ -126,11 +171,14 @@ int main(int argc, char *argv[]){
     cin >> super;
     if(super == "yes"){
         server->isSuper = true;
+        cout << "How many goods?" << endl;
+        cin >> goods;
+        server->numGoods = atoi(goods.c_str());
     }else{
         server->isSuper = false;
     }
 
-    cout << "Is this a Sequential?" << endl;
+    cout << "Is this a sequential auction?" << endl;
     cin >> seq;
     if(!seq.compare("yes")){
         server->isSequential = true;
