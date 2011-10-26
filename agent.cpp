@@ -13,6 +13,7 @@ void Agent::createValuations(int numGoods){
     for(int i = 0; i < numGoods; i++){
         valuations.push_back(((float)rand()) / (float)(RAND_MAX));
         payments.push_back(0);
+        bids.push_back(0);
     }
 }
 

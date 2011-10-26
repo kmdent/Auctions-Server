@@ -21,21 +21,139 @@ Server::~Server()
 
 void Server::runAscending(){
     bool isOver = false;
+    vector<vector<float> > bids;
+    vector<int> winners;
+    vector<float> highestBids;
+    vector<float> secondPrices;
+    vector<float> winningPrices;
+    vector<float> askPrices;
+    vector<int> quiescent;
 
-    for(int i = 0; i < numAgents; i++){
-        agents.push_back(new aAgent(i));
-        agents.at(i)->numBidders = numAgents;
-        agents.at(i)->isSuper = isSuper;
-        agents.at(i)->isSeq = isSequential;
+    for(int i = 0; i < numGoods; i++){
+        highestBids.push_back(0);
+        secondPrices.push_back(0);
+        winners.push_back(-1);
+        winningPrices.push_back(0);
+        askPrices.push_back(.05);
+        quiescent.push_back(0);
     }
-
-    while(!isOver){
-        int askPrice = .05;
-        for(int i = 0; i < agents.size(); i++){
-            agents.at(i)->highBidders.at(0) = highBidder;
-            agents.at(i)->bid(askPrice);
+    for(int i = 0; i < numAgents; i++){
+        aAgent *a = new aAgent(i);
+        a->createValuations(numGoods);
+        a->numBidders = numAgents;
+        a->firstPrice = firstPrice;
+        agents.push_back(a);
+    }
+    if(! isSequential){
+        while(! isOver){
+            cout << "new round" << endl;
+            bids.clear();
+            for(int i = 0; i < agents.size(); i++){
+                bids.push_back(((aAgent*)(agents.at(i)))->bidSimultaneous(numGoods, winners, winningPrices, askPrices));
+            }
+            for(int good = 0; good < numGoods; good++){
+                quiescent.at(good) = 1;
+                vector<int> ties;
+                for(int bidder = 0; bidder < agents.size(); bidder++){
+                    if(bids.at(bidder).at(good) >= askPrices.at(good)){
+                        if(bids.at(bidder).at(good) > highestBids.at(good)){
+                            secondPrices.at(good) = highestBids.at(good);
+                            highestBids.at(good) = bids.at(bidder).at(good);
+                            ties.clear();
+                            ties.push_back(bidder);
+                            quiescent.at(good) = 0;
+                        }
+                        else if(bids.at(bidder).at(good) == highestBids.at(good)){
+                            ties.push_back(bidder);
+                            secondPrices.at(good) = bids.at(bidder).at(good);
+                        }
+                        else if(bids.at(bidder).at(good) > secondPrices.at(good)){
+                            secondPrices.at(good) = bids.at(bidder).at(good);
+                        }
+                    }
+                }
+                if(ties.size() > 0){
+                    int randWinner = (int)(((float)rand() / (float)(RAND_MAX)) * ties.size());
+                    winners.at(good) = ties.at(randWinner);
+                }
+                if(firstPrice){
+                    winningPrices.at(good) = highestBids.at(good);
+                }
+                else winningPrices.at(good) = secondPrices.at(good);
+                askPrices.at(good) = highestBids.at(good)+.05;
+            }
+            isOver = true;
+            for(int i = 0; i< numGoods; i++){
+                if(quiescent.at(i) == 0){
+                    isOver = false;
+                    break;
+                }
+            }
         }
     }
+    else{   //sequential
+        for(int i = 0; i < numAgents; i++){
+            vector<float> v;
+            for(int j = 0; j<numGoods;j++){
+                v.push_back(0);
+            }
+            bids.push_back(v);
+        }
+        for(int good = 0; good < numGoods; good ++){
+            isOver = false;
+            while(! isOver){
+                cout << "new round"  << endl;
+                for(int i = 0; i < agents.size(); i++){
+                    bids.at(i).at(good) = ((aAgent*)(agents.at(i)))->bidSequential(numGoods, good, winners, winningPrices.at(good), askPrices.at(good));
+                }
+                quiescent.at(good) = 1;
+                vector<int> ties;
+                for(int bidder = 0; bidder < agents.size(); bidder++){
+                    if(bids.at(bidder).at(good) >= askPrices.at(good)){
+                        if(bids.at(bidder).at(good) > highestBids.at(good)){
+                            secondPrices.at(good) = highestBids.at(good);
+                            highestBids.at(good) = bids.at(bidder).at(good);
+                            ties.clear();
+                            ties.push_back(bidder);
+                            quiescent.at(good) = 0;
+                        }
+                        else if(bids.at(bidder).at(good) == highestBids.at(good)){
+                            ties.push_back(bidder);
+                            secondPrices.at(good) = bids.at(bidder).at(good);
+                        }
+                        else if(bids.at(bidder).at(good) > secondPrices.at(good)){
+                            secondPrices.at(good) = bids.at(bidder).at(good);
+                        }
+                    }
+                }
+                if(ties.size() > 0){
+                    int randWinner = (int)(((float)rand() / (float)(RAND_MAX)) * ties.size());
+                    winners.at(good) = ties.at(randWinner);
+                }
+                if(firstPrice){
+                    winningPrices.at(good) = highestBids.at(good);
+                }
+                else winningPrices.at(good) = secondPrices.at(good);
+                askPrices.at(good) = highestBids.at(good)+.05;
+                if(quiescent.at(good) == 1){
+                    isOver = true;
+                }
+            }
+        }
+    }
+    for(int good = 0; good < numGoods; good++){
+        cout << "Good " << good << endl;
+        for(int i = 0; i < numGoods; i++){
+            if(firstPrice){
+                agents.at(winners.at(i))->payments.at(i) = highestBids.at(i);
+            }
+            else agents.at(winners.at(i))->payments.at(i) = secondPrices.at(i);
+        }
+        for(int i = 0; i < numAgents; i++){
+            cout <<"Bidder " << i << "{ "<< "Value: " << agents.at(i)->valuations.at(good) << ", Bid: " << bids.at(i).at(good) << ", Paid: "<< agents.at(i)->payments.at(good) << "}"<<endl;
+        }
+    }
+
 }
 
 void Server::runDescending(){
@@ -136,16 +254,11 @@ void Server::runSealedPrice(){
     cout << "-------------------------Auction Results__________________________"<<endl;
     for(int good = 0; good < numGoods; good++){
         cout << "Good " << good << endl;
-        for(int bidder = 0; bidder < numAgents; bidder++){
-            if(winners.at(good) == bidder){
-                if(firstPrice){
-                    agents.at(bidder)->payments.at(good) = highestBids.at(good);
-                }
-                else{
-                    agents.at(bidder)->payments.at(good) = secondPrices.at(good);
-                }
+        for(int i = 0; i < numGoods; i++){
+            if(firstPrice){
+                agents.at(winners.at(i))->payments.at(i) = highestBids.at(i);
             }
-            else agents.at(bidder)->payments.at(good) = 0;
+            else agents.at(winners.at(i))->payments.at(i) = secondPrices.at(i);
         }
         for(int i = 0; i < numAgents; i++){
             cout <<"Bidder " << i << "{ "<< "Value: " << agents.at(i)->valuations.at(good) << ", Bid: " << bids.at(i).at(good) << ", Paid: "<< agents.at(i)->payments.at(good) << "}"<<endl;
@@ -166,6 +279,13 @@ int main(int argc, char *argv[]){
     rand();
     cout << "Enter the type of Auction" << endl;
     cin >> aType;
+
+    cout << "1st or 2nd price?" << endl;
+    cin >> price;
+    if(! price.compare("1st")){
+        server->firstPrice = true;
+    }
+    else server->firstPrice = false;
 
     cout << "Is this a Super auction?" << endl;
     cin >> super;
@@ -195,12 +315,7 @@ int main(int argc, char *argv[]){
     }else if(!aType.compare("Descending")|| !aType.compare("D")){
         server->runDescending();
     }else if(!aType.compare("Sealed") || !aType.compare("S")){
-        cout << "1st or 2nd price?" << endl;
-        cin >> price;
-        if(! price.compare("1st")){
-            server->firstPrice = true;
-        }
-        else server->firstPrice = false;
+
         server->runSealedPrice();
     }
 

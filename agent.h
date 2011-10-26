@@ -10,13 +10,11 @@ class Agent
 {
 public:
     int numBidders;
-    vector<int> highBidders;
-    int ask;
     int id;
     vector<float> payments;
-    bool isSuper;
-    bool isSeq;
+    bool firstPrice;
     vector<float> valuations;
+    vector<float> bids;
     Agent(int i);
     float bid(float i);
     void createValuations(int numGoods);
