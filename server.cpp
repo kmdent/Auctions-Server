@@ -46,7 +46,7 @@ void Server::runAscending(){
     }
     if(! isSequential){
         while(! isOver){
-
+            cout << "Starting round"  << endl;
             bids.clear();
             for(int i = 0; i < agents.size(); i++){
                 bids.push_back(((aAgent*)(agents.at(i)))->bidSimultaneous(numGoods, winners, winningPrices, askPrices));
@@ -101,9 +101,12 @@ void Server::runAscending(){
                 for(int j = 0; j < numAgents; j++){
                     cout << "Bidder: "<< j << " Bid: " << bids.at(j).at(i) << endl;
                 }
-                cout <<"Winner: " <<  winners.at(i) << " with a winning price of: " << winningPrices.at(i) << endl;
+                cout <<"Winner: " <<  winners.at(i) << " with a bid of: " << highestBids.at(i) << endl;
                 cout << "new round ask price: " << askPrices.at(i) << endl;
             }
+            string a;
+            cout << "Press any character and hit enter to start next round"  << endl;
+            cin >> a;
         }
     }
     else{   //sequential
@@ -158,10 +161,13 @@ void Server::runAscending(){
                 for(int j = 0; j < numAgents; j++){
                     cout << "Bidder: "<< j << " Bid: " << bids.at(j).at(good) << endl;
                 }
-                cout <<"Winner of the round: " <<  winners.at(good) << " with a winning price of: " << winningPrices.at(good) << endl;
+                cout <<"Winner of the round: " <<  winners.at(good) << " with a bid of: " << highestBids.at(good) << endl;
                 cout << "new round ask price: " << askPrices.at(good) << endl;
 
             }
+            cout << "Type any character and hit enter for next good"  << endl;
+            string a;
+            cin >> a;
 
         }
     }
@@ -175,7 +181,7 @@ void Server::runAscending(){
             else agents.at(winners.at(i))->payments.at(i) = secondPrices.at(i);
         }
         for(int i = 0; i < numAgents; i++){
-            cout <<"Bidder " << i << "{ "<< "Value: " << agents.at(i)->valuations.at(good) << ", Bid: " << bids.at(i).at(good) << ", Paid: "<< agents.at(i)->payments.at(good) << "}"<<endl;
+            cout <<"Bidder " << i << "{ "<< "Value: " << agents.at(i)->valuations.at(good) << ", Bid: " << bids.at(i).at(good) << ", Paid: "<< agents.at(i)->payments.at(good) <<  "}"<<endl;
         }
     }
 
@@ -297,7 +303,6 @@ void Server::runSealedPrice(){
 int main(int argc, char *argv[]){
 
     string aType;
-    string super;
     string seq;
     string price;
     string goods;
@@ -315,16 +320,9 @@ int main(int argc, char *argv[]){
     }
     else server->firstPrice = false;
 
-    cout << "Is this a Super auction?" << endl;
-    cin >> super;
-    if(super == "yes"){
-        server->isSuper = true;
-        cout << "How many goods?" << endl;
-        cin >> goods;
-        server->numGoods = atoi(goods.c_str());
-    }else{
-        server->isSuper = false;
-    }
+    cout << "How many goods?" << endl;
+    cin >> goods;
+    server->numGoods = atoi(goods.c_str());
 
     cout << "Is this a sequential auction?" << endl;
     cin >> seq;

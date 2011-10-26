@@ -7,7 +7,6 @@ class Server
 {
 public:
     int numAgents;
-    bool isSuper;
     bool isSequential;
     bool firstPrice;
     int highBidder;
