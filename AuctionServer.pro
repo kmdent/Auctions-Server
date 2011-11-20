@@ -20,7 +20,6 @@ SOURCES += \
     server.cpp \
     agent.cpp \
     aagent.cpp \
-    dagent.cpp \
     sagent.cpp
 
 
@@ -28,8 +27,9 @@ HEADERS += \
     server.h \
     agent.h \
     aagent.h \
-    dagent.h \
     sagent.h
+
+
 
 
 
