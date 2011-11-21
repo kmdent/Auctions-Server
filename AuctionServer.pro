@@ -20,14 +20,18 @@ SOURCES += \
     server.cpp \
     agent.cpp \
     aagent.cpp \
-    sagent.cpp
+    sagent.cpp \
+    price_predictor.cpp
 
 
 HEADERS += \
     server.h \
     agent.h \
     aagent.h \
-    sagent.h
+    sagent.h \
+    price_predictor.h
+
+
 
 
 

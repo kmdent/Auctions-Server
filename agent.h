@@ -11,14 +11,23 @@ class Agent
 public:
     int numBidders;
     int id;
-    vector<float> payments;
+    int lambda;
     bool firstPrice;
+
+    vector<float> bundleVal;
+    vector<float> payments;
     vector<float> valuations;
     vector<float> bids;
+    vector<vector<int> * > *  subsets;
+    vector<int> goodsWon;
+
     Agent(int i);
     float bid(float i);
-    void createValuations(int numGoods);
-
+    void createValuations(vector<vector<int> * > *  subsets_,int numGoods);
+    int getBundleValue(vector<int> *  subset);
+    float surplus(vector<int> * subset, vector<float> priceVecb);
+    vector<int> * optimalBundle(vector<float> priceVec);
+    float marginalValue(int good, vector<float> priceVec);
 protected:
 };
 
