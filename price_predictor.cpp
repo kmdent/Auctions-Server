@@ -45,7 +45,7 @@ void price_predictor::runAscending(){
     while(! isOver){
         bids.clear();
         for(int i = 0; i < agents.size(); i++){
-            bids.push_back(((aAgent*)(agents.at(i)))->bidSimultaneous(numGoods, winners, winningPrices, askPrices));
+            bids.push_back(((aAgent*)(agents.at(i)))->bidSimultaneous(numGoods, winners, winningPrices, askPrices, PP));
         }
 
 
@@ -106,6 +106,11 @@ void price_predictor::runSealedPrice(){
     }
     for(int i = 0; i < numAgents; i++){
         sAgent *s = new sAgent(i);
+        if(1){
+            s->MV = 1;
+        }else{
+            s->MV = 0;
+        }
         s->createValuations(Psubsets,numGoods);
         s->numBidders = numAgents;
         s->firstPrice = firstPrice;
@@ -208,7 +213,7 @@ price_predictor::price_predictor(vector<float> _predict,bool isA, vector< vector
 
     for(int i =0; i < 100; i++){
         bool converged = iteration(isA);
-        cout << "one iteration completed "  << convPrice->size()<< endl;
+        cout << i << " iteration completed "  << endl;
         cout << "1:" << convPrice->at(0) << " 2:" << convPrice->at(1) << " 3:"
              << convPrice->at(2) << " 4:" << convPrice->at(3) << " 5:" << convPrice->at(4) << endl;
         PP.clear();

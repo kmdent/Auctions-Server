@@ -14,6 +14,7 @@ public:
     vector<Agent*> agents;
 
 
+
     Server();
     virtual ~Server();
     void runAscending();

@@ -12,23 +12,45 @@ sAgent::~sAgent(){
 
 vector<float> sAgent::bidSimultaneous(int numGoods, vector<float> prediction,bool isPrediction){
     vector<float> v;
-    vector<float> tmpPrice;
-    tmpPrice.push_back(10);
-    tmpPrice.push_back(10);
-    tmpPrice.push_back(10);
-    tmpPrice.push_back(10);
-    tmpPrice.push_back(10);
 
 
-    if(isPrediction == 1){
-        price_predictor * p = new price_predictor(tmpPrice,0, subsets);
-        prediction = p->getPrices();
-        cout << "Prediction ended &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&" << endl;
-    }
 
-    for(int i = 0; i < numGoods; i++){
-        float tmpbid = marginalValue(i+1,prediction);
-        v.push_back(tmpbid);
+
+    if(MV){
+        vector<float> tmpPrice;
+        tmpPrice.push_back(10);
+        tmpPrice.push_back(10);
+        tmpPrice.push_back(10);
+        tmpPrice.push_back(10);
+        tmpPrice.push_back(10);
+
+
+
+
+        if(isPrediction == 1){
+            price_predictor * p = new price_predictor(tmpPrice,0, subsets);
+            prediction = p->getPrices();
+            cout << "Prediction ended &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&" << endl;
+        }
+
+
+//        cout << "/=======================================" << endl;
+//        cout << "Price Vec In the bid function: ";
+//        for(int i = 0; i< prediction.size(); i++){
+//            cout << prediction.at(i) << " ";
+//        }
+//        cout << endl;
+//        cout << "Num goods " << numGoods << endl;
+//        cout << "/=======================================" << endl;
+
+        for(int i = 0; i < numGoods; i++){
+            float tmpbid = marginalValue(i+1,prediction);
+            v.push_back(tmpbid);
+        }
+    }else{
+        for(int i = 0; i < numGoods; i++){
+            v.push_back(valuations.at(i));
+        }
     }
     return v;
 }

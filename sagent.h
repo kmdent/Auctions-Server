@@ -11,7 +11,7 @@ public:
     vector<float> bidSimultaneous(int numGoods, vector<float> prediction, bool isPrediction);
     bool firstPrice;
     float _bid;
-
+    bool MV;
 
 
 };

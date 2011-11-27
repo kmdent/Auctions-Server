@@ -1,8 +1,10 @@
 #include "agent.h"
 #include "stdio.h"
 #include "iostream"
+#include "string.h"
 
 
+using namespace std;
 
 Agent::Agent(int tmp)
 {
@@ -72,12 +74,25 @@ vector<int> * Agent::optimalBundle(vector<float> priceVec) {
 float Agent::marginalValue(int good, vector<float> priceVec) {
 
     //cout << good <<" " <<  priceVec.size() << endl;
+    string a;
 
     priceVec.at(good-1) = 0;
-    float surpWith = surplus(optimalBundle(priceVec), priceVec);
+    vector<int>* optbun = optimalBundle(priceVec);
+    float surpWith = surplus(optbun, priceVec);
+
 
     priceVec.at(good-1) = 1000000000;
-    float surpWO = surplus(optimalBundle(priceVec), priceVec);
+    optbun = optimalBundle(priceVec);
+    float surpWO = surplus(optbun, priceVec);
+
+
+//    cout << "Price Vec: ";
+//    for(int i = 0; i< priceVec.size(); i++){
+//        cout << priceVec.at(i) << " ";
+//    }
+//    cout << endl;
+//    cout << "Good: " << good<< " With: " << surpWith << " Without: " << surpWO << " Marginal: "<< (surpWith - surpWO) << endl;
+//    cin >> a;
 
     return surpWith - surpWO; /*Possibly subtract the price at good i*/
 }

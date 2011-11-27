@@ -15,6 +15,8 @@ using namespace std;
 
 /*GLOBALS*/
 vector<vector<int> * > * subsets;
+vector<bool> bTypes;
+
 
 
 Server::Server()
@@ -143,6 +145,7 @@ void Server::runSealedPrice(){
     }
     for(int i = 0; i < numAgents; i++){
         sAgent *s = new sAgent(i);
+        s->MV = bTypes.at(i);
         s->createValuations(subsets,numGoods);
         s->numBidders = numAgents;
         s->firstPrice = firstPrice;
@@ -201,7 +204,7 @@ void Server::runSealedPrice(){
             cout << tmpAgent->valuations.at(j) << " ";
         }
         cout << endl;
-        cout << "Lambda: " << tmpAgent->lambda << endl;
+        cout << "Lambda: " << tmpAgent->lambda << " Is MV: " << tmpAgent->MV <<  endl;
         for (int j = 0; j < tmpAgent->bundleVal.size(); ++j) {
             cout << "Subset: ";
             for(int l = 0; l< subsets->at(j)->size(); l++){
@@ -243,6 +246,8 @@ int main(int argc, char *argv[]){
     }
 
 
+
+
     string aType;
     Server * server= new Server();
     srand(time(NULL));
@@ -252,6 +257,17 @@ int main(int argc, char *argv[]){
     server->numGoods = 5;
     server->isSequential = false;
     server->numAgents = 8;
+
+
+    bTypes.push_back(true);
+    bTypes.push_back(true);
+    bTypes.push_back(true);
+    bTypes.push_back(true);
+    bTypes.push_back(true);
+    bTypes.push_back(true);
+    bTypes.push_back(true);
+    bTypes.push_back(true);
+    bTypes.push_back(true);
 
 
     // Getting the auction type
