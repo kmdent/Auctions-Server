@@ -86,13 +86,13 @@ float Agent::marginalValue(int good, vector<float> priceVec) {
     float surpWO = surplus(optbun, priceVec);
 
 
-//    cout << "Price Vec: ";
-//    for(int i = 0; i< priceVec.size(); i++){
-//        cout << priceVec.at(i) << " ";
-//    }
-//    cout << endl;
-//    cout << "Good: " << good<< " With: " << surpWith << " Without: " << surpWO << " Marginal: "<< (surpWith - surpWO) << endl;
-//    cin >> a;
+   /* cout << "Price Vec: ";
+    for(int i = 0; i< priceVec.size(); i++){
+        cout << priceVec.at(i) << " ";
+    }
+    cout << endl;
+    cout << "Good: " << good<< " With: " << surpWith << " Without: " << surpWO << " Marginal: "<< (surpWith - surpWO) << endl;
+    cin >> a;*/
 
     return surpWith - surpWO; /*Possibly subtract the price at good i*/
 }

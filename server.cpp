@@ -175,7 +175,7 @@ float Server::runAscending(){
 
 }
 
-void Server::runSealedPrice(){
+float Server::runSealedPrice(){
 
     vector<vector<float> > bids;
     vector<int> winners;
@@ -196,6 +196,8 @@ void Server::runSealedPrice(){
 
     if(! isSequential){ //simultaneous
         for(int i = 0; i < agents.size(); i++){
+            vector<float> predictions;
+            //bids.push_back(((sAgent*)(agents.at(i)))->bidSimultaneous(numGoods, predictions, 0));
             bids.push_back(((sAgent*)(agents.at(i)))->bidSimultaneous(numGoods, (vector<float>)NULL, 1));
         }
         for(int good = 0; good < numGoods; good++){ // Iterating the goods
@@ -241,6 +243,7 @@ void Server::runSealedPrice(){
     }
 
     cout << "------------------------Agent information-------------------------" << endl;
+    string dummy;
     for (int i = 0; i < agents.size(); ++i) {
         sAgent * tmpAgent = (sAgent *)agents.at(i);
         cout << "---------------Agent " << i <<  "---------------" <<  endl;
@@ -261,6 +264,14 @@ void Server::runSealedPrice(){
 
 
     }
+    sAgent *firstAgent = (sAgent*)agents.at(0);
+    float surplus = firstAgent->surplus(&(firstAgent->goodsWon), secondPrices);
+    for(int i =0; i < agents.size(); i++){
+        sAgent *tmp =(sAgent *) agents.at(i);
+        delete tmp;
+    }
+    agents.clear();
+    return surplus;
 
 }
 
@@ -335,8 +346,15 @@ int main(int argc, char *argv[]){
         averageSurplus = totalSurplus/10000;
         cout << "average Surplus: " <<averageSurplus << endl;
     }else{
-        cout << "running sealed price" << endl;
-        server->runSealedPrice();
+        //vector<float> surplus;
+        //float totalSurplus = 0;
+       // for(int i = 0; i<10000; i++){
+            cout << "running sealed price" << endl;
+            float s = server->runSealedPrice();
+       //     cout << "Agent 1's surplus: " << s << endl;
+       //     totalSurplus += s;
+       // }
+        //cout << "average surplus: " << totalSurplus/10000 << endl;
     }
 
 
