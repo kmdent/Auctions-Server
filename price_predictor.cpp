@@ -21,7 +21,6 @@ void price_predictor::runAscending(){
     vector<vector<float> > bids;
     vector<int> winners;
     vector<float> highestBids;
-    vector<float> secondPrices;
     vector<float> winningPrices;
     vector<float> askPrices;
     vector<int> quiescent;
@@ -47,6 +46,26 @@ void price_predictor::runAscending(){
         for(int i = 0; i < agents.size(); i++){
             bids.push_back(((aAgent*)(agents.at(i)))->bidSimultaneous(numGoods, winners, winningPrices, askPrices, PP));
         }
+
+       /* for(int i=0; i < bids.size(); i++){
+            cout << "Agent : " << i  << " ";
+            for(int j =0; j < bids.at(i).size(); j++){
+                cout << bids.at(i).at(j) << ", ";
+           }
+            cout << endl;
+        }
+        */
+        /*
+        cout << "Price Preict: ";
+        for(int i =0; i < PP.size(); i++){
+            cout << PP.at(i) << ", ";
+        }
+        cout << endl;
+        string a;
+        cin >> a;
+*/
+
+
 
 
         for(int good = 0; good < numGoods; good++){
@@ -78,7 +97,7 @@ void price_predictor::runAscending(){
                 winningPrices.at(good) = highestBids.at(good);
             }
             else winningPrices.at(good) = secondPrices.at(good);
-            askPrices.at(good) = highestBids.at(good)+.05;
+            askPrices.at(good) = highestBids.at(good)+.5;
 
         }
 
@@ -167,18 +186,20 @@ void price_predictor::clear_all(){
 }
 
 bool price_predictor::iteration(bool isA){
-
+    //cout << "iteration started" << endl;
     vector<float> averagePrice;
     for (int i = 0; i < numGoods; i++) averagePrice.push_back(0.0); /*Init the vector*/
 
     for(int i = 0; i < 1000; i++){
         clear_all();
         if(isA){
+           // cout << "About to run ascending" << endl;
             runAscending();
-
+           // cout << "Ran an ascending" << endl;
         }else{
             runSealedPrice();
         }
+        //cout << averagePrice.size() << " " << secondPrices.size()<< endl;
         vector_plusEquals(&averagePrice, secondPrices);
     }
     vector_divideEquals(&averagePrice, (float)1000.0);
@@ -201,6 +222,8 @@ bool price_predictor::iteration(bool isA){
 
 price_predictor::price_predictor(vector<float> _predict,bool isA, vector< vector<int> *> * _subs)
 {
+
+    cout << "PRICE PREDICTOR CREATED " << endl;
     convPrice = new vector<float>(5);
     Psubsets = _subs;
     PP = _predict;
@@ -222,6 +245,7 @@ price_predictor::price_predictor(vector<float> _predict,bool isA, vector< vector
             break;
         }
     }
+    cout << "ALL ITERATIONS COMPLETED" << endl;
 
 
 }

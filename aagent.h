@@ -7,7 +7,9 @@ class aAgent: public Agent
 public:
     aAgent(int i);
     vector<float> priceVec;
+    vector<float> prevAsk;
     int round;
+    int MV;
     void predictPrice();
     virtual ~aAgent();
     vector<float> bidSimultaneous(int numGoods, vector<int> currWinners, vector<float> winningPrices, vector<float> askPrices);

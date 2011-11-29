@@ -17,7 +17,7 @@ public:
 
     Server();
     virtual ~Server();
-    void runAscending();
+    float runAscending();
     void runDescending();
     void runSealedPrice();
 

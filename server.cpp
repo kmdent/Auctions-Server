@@ -27,12 +27,12 @@ Server::~Server()
 {
 }
 
-void Server::runAscending(){
+float Server::runAscending(){
     bool isOver = false;
     vector<vector<float> > bids;
     vector<int> winners;
-    vector<float> highestBids;
     vector<float> secondPrices;
+    vector<float> highestBids;
     vector<float> winningPrices;
     vector<float> askPrices;
     vector<int> quiescent;
@@ -47,6 +47,7 @@ void Server::runAscending(){
     }
     for(int i = 0; i < numAgents; i++){
         aAgent *a = new aAgent(i);
+        a->MV = bTypes.at(i);
         a->createValuations(subsets, numGoods);
         a->numBidders = numAgents;
         a->firstPrice = firstPrice;
@@ -54,12 +55,12 @@ void Server::runAscending(){
     }
     if(! isSequential){
         while(! isOver){
-            cout << "Starting round"  << endl;
+          //  cout << "Starting round"  << endl;
             bids.clear();
             for(int i = 0; i < agents.size(); i++){
                 bids.push_back(((aAgent*)(agents.at(i)))->bidSimultaneous(numGoods, winners, winningPrices, askPrices));
             }
-
+          //  cout << "Pushed back the bids" << endl;
 
             for(int good = 0; good < numGoods; good++){
                 quiescent.at(good) = 1;
@@ -86,13 +87,17 @@ void Server::runAscending(){
                     int randWinner = (int)(((float)rand() / (float)(RAND_MAX)) * ties.size());
                     winners.at(good) = ties.at(randWinner);
                 }
-                if(firstPrice){
-                    winningPrices.at(good) = highestBids.at(good);
-                }
-                else winningPrices.at(good) = secondPrices.at(good);
+
+                winningPrices.at(good) = secondPrices.at(good);
                 askPrices.at(good) = highestBids.at(good)+.05;
 
             }
+
+           // cout << "\n Second prices:  ";
+           // for(int k =0; k < secondPrices.size(); k++){
+           //     cout << "Good " <<k << ": " << secondPrices.at(k) << ", ";
+           // }
+           // cout << endl;
 
             // Round is over
 
@@ -104,7 +109,7 @@ void Server::runAscending(){
                 }
             }
 
-            for(int i = 0; i < numGoods; i++){
+           /* for(int i = 0; i < numGoods; i++){
                 cout <<"Good: " << i << endl;
                 for(int j = 0; j < numAgents; j++){
                     cout << "Bidder: "<< j << " Bid: " << bids.at(j).at(i) << endl;
@@ -114,22 +119,59 @@ void Server::runAscending(){
             }
             string a;
             cout << "Press any character and hit enter to start next round"  << endl;
-            cin >> a;
+            //cin >> a; */
         }
     }
-    cout << "-------------------------Auction Results__________________________"<<endl;
+
+   //cout << "-------------------------Auction Results__________________________"<<endl;
     for(int good = 0; good < numGoods; good++){
-        cout << "Good " << good << endl;
+     //   cout << "Good " << good << endl;
         for(int i = 0; i < numGoods; i++){
-            if(firstPrice){
-                agents.at(winners.at(i))->payments.at(i) = highestBids.at(i);
+
+            if(winners.at(i) == -1){
+                winners.at(i) = (int)(((float)rand() / (float)(RAND_MAX))*numAgents);
+       //         cout << "No one bid. We gave it to: " << winners.at(i)<< "+++++++++++++++++++++++++++++uaeoueoaueoa+++++++++++++++++++++++++++++++++" << endl;
             }
-            else agents.at(winners.at(i))->payments.at(i) = secondPrices.at(i);
+            agents.at(winners.at(i))->payments.at(i) = secondPrices.at(i);
+
         }
-        for(int i = 0; i < numAgents; i++){
-            cout <<"Bidder " << i << "{ "<< "Value: " << agents.at(i)->valuations.at(good) << ", Bid: " << bids.at(i).at(good) << ", Paid: "<< agents.at(i)->payments.at(good) <<  "}"<<endl;
-        }
+       // for(int i = 0; i < numAgents; i++){
+        //    cout <<"Bidder " << i << "{ "<< "Value: " << agents.at(i)->valuations.at(good) << ", Bid: " << bids.at(i).at(good) << ", Paid: "<< agents.at(i)->payments.at(good) <<  "}"<<endl;
+       // }
     }
+
+
+    for(int i =0; i < winners.size(); i++){
+        agents.at(winners.at(i))->goodsWon.push_back(i+1);
+    }
+
+  //  cout << "\n Second prices:  ";
+    //for(int k =0; k < secondPrices.size(); k++){
+    //    cout << "Good " <<k << ": " << secondPrices.at(k) << ", ";
+    //}
+    //cout << endl;
+
+
+
+   /* cout << "------------------------Agent information-------------------------" << endl;
+    for (int i = 0; i < agents.size(); ++i) {
+        aAgent * tmpAgent = (aAgent *)agents.at(i);
+        cout << "---------------Agent " << i <<  "---------------" <<  endl;
+        cout << "Valuations: ";
+        for(int j = 0; j< tmpAgent->valuations.size(); j++){
+            cout << tmpAgent->valuations.at(j) << " ";
+        }
+        cout << ",Lambda: " << tmpAgent->lambda << "Surplus: " << tmpAgent->surplus(&(tmpAgent->goodsWon),secondPrices) << endl;
+
+    }*/
+
+    float toReturn = agents.at(0)->surplus(&(agents.at(0)->goodsWon),secondPrices);
+
+    for(int i = 0; i < agents.size(); i++){
+        delete (aAgent *) agents.at(i);
+    }
+    agents.clear();
+    return toReturn;
 
 }
 
@@ -169,6 +211,9 @@ void Server::runSealedPrice(){
                 else if(bids.at(bidder).at(good) > secondBid){
                     secondBid = bids.at(bidder).at(good);
                 }
+            }
+            if(winners.at(good) == -1){
+                winners.at(good) = (int)(((float)rand() / (float)(RAND_MAX))*numAgents);
             }
             highestBids.push_back(highBid);
             secondPrices.push_back(secondBid);
@@ -223,7 +268,7 @@ vector<vector<int> * > * Asub(vector<vector<int> * > * subsets, int s[],int p,in
     if(q==k){
         vector<int> * tmp = new vector<int>();
         for(int i=0;i<k;i++){
-           // printf("%d ",t[i]);
+            // printf("%d ",t[i]);
             tmp->push_back(t[i]);
         }
         subsets->push_back(tmp);
@@ -240,6 +285,7 @@ int main(int argc, char *argv[]){
 
     /*Generates all of the subsets for the aquisition problem*/
     subsets = new vector<vector<int> * >();
+    subsets->push_back(new vector<int>());
     int s[]={1,2,3,4,5},t[5];
     for(int i = 1; i <=5; i++){
         Asub(subsets, s,5,i,t);
@@ -274,13 +320,25 @@ int main(int argc, char *argv[]){
     cout << "Enter the type of Auction" << endl;
     cin >> aType;
 
+    float totalSurplus = 0.0;
+    float averageSurplus = 0.0;
+
     if(!aType.compare("Ascending") || !aType.compare("A")){
         cout << "running ascending" << endl;
-        server->runAscending();
+
+        for(int i = 0; i < 10000; i++){
+           totalSurplus += server->runAscending();
+           if(fmod((double)i,(double)100) == 0){
+               cout << "Iteration: " << i <<endl;
+           }
+        }
+        averageSurplus = totalSurplus/10000;
+        cout << "average Surplus: " <<averageSurplus << endl;
     }else{
         cout << "running sealed price" << endl;
         server->runSealedPrice();
     }
+
 
     delete server;
     return 1;
