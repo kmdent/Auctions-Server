@@ -133,7 +133,7 @@ void Server::runAscending(){
 
 }
 
-void Server::runSealedPrice(){
+float Server::runSealedPrice(){
 
     vector<vector<float> > bids;
     vector<int> winners;
@@ -154,6 +154,8 @@ void Server::runSealedPrice(){
 
     if(! isSequential){ //simultaneous
         for(int i = 0; i < agents.size(); i++){
+            vector<float> predictions;
+            //bids.push_back(((sAgent*)(agents.at(i)))->bidSimultaneous(numGoods, predictions, 0));
             bids.push_back(((sAgent*)(agents.at(i)))->bidSimultaneous(numGoods, (vector<float>)NULL, 1));
         }
         for(int good = 0; good < numGoods; good++){ // Iterating the goods
@@ -169,6 +171,9 @@ void Server::runSealedPrice(){
                 else if(bids.at(bidder).at(good) > secondBid){
                     secondBid = bids.at(bidder).at(good);
                 }
+            }
+            if(winners.at(good) == -1){
+                winners.at(good) = (int)(((float)rand() / (float)(RAND_MAX))*numAgents);
             }
             highestBids.push_back(highBid);
             secondPrices.push_back(secondBid);
@@ -196,6 +201,7 @@ void Server::runSealedPrice(){
     }
 
     cout << "------------------------Agent information-------------------------" << endl;
+    string dummy;
     for (int i = 0; i < agents.size(); ++i) {
         sAgent * tmpAgent = (sAgent *)agents.at(i);
         cout << "---------------Agent " << i <<  "---------------" <<  endl;
@@ -216,6 +222,14 @@ void Server::runSealedPrice(){
 
 
     }
+    sAgent *firstAgent = (sAgent*)agents.at(0);
+    float surplus = firstAgent->surplus(&(firstAgent->goodsWon), secondPrices);
+    for(int i =0; i < agents.size(); i++){
+        sAgent *tmp =(sAgent *) agents.at(i);
+        delete tmp;
+    }
+    agents.clear();
+    return surplus;
 
 }
 
@@ -240,6 +254,7 @@ int main(int argc, char *argv[]){
 
     /*Generates all of the subsets for the aquisition problem*/
     subsets = new vector<vector<int> * >();
+    subsets->push_back(new vector<int>());
     int s[]={1,2,3,4,5},t[5];
     for(int i = 1; i <=5; i++){
         Asub(subsets, s,5,i,t);
@@ -278,8 +293,15 @@ int main(int argc, char *argv[]){
         cout << "running ascending" << endl;
         server->runAscending();
     }else{
-        cout << "running sealed price" << endl;
-        server->runSealedPrice();
+        //vector<float> surplus;
+        //float totalSurplus = 0;
+       // for(int i = 0; i<10000; i++){
+            cout << "running sealed price" << endl;
+            float s = server->runSealedPrice();
+       //     cout << "Agent 1's surplus: " << s << endl;
+       //     totalSurplus += s;
+       // }
+        //cout << "average surplus: " << totalSurplus/10000 << endl;
     }
 
     delete server;

@@ -19,7 +19,7 @@ public:
     virtual ~Server();
     void runAscending();
     void runDescending();
-    void runSealedPrice();
+    float runSealedPrice();
 
 private:
     vector<int> highBidders;
