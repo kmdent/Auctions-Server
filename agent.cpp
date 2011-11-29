@@ -73,7 +73,6 @@ vector<int> * Agent::optimalBundle(vector<float> priceVec) {
 */
 float Agent::marginalValue(int good, vector<float> priceVec) {
 
-    //cout << good <<" " <<  priceVec.size() << endl;
     string a;
 
     priceVec.at(good-1) = 0;

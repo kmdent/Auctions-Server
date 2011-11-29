@@ -55,12 +55,10 @@ float Server::runAscending(){
     }
     if(! isSequential){
         while(! isOver){
-          //  cout << "Starting round"  << endl;
             bids.clear();
             for(int i = 0; i < agents.size(); i++){
                 bids.push_back(((aAgent*)(agents.at(i)))->bidSimultaneous(numGoods, winners, winningPrices, askPrices));
             }
-          //  cout << "Pushed back the bids" << endl;
 
             for(int good = 0; good < numGoods; good++){
                 quiescent.at(good) = 1;
@@ -279,11 +277,9 @@ vector<vector<int> * > * Asub(vector<vector<int> * > * subsets, int s[],int p,in
     if(q==k){
         vector<int> * tmp = new vector<int>();
         for(int i=0;i<k;i++){
-            // printf("%d ",t[i]);
             tmp->push_back(t[i]);
         }
         subsets->push_back(tmp);
-        //printf("\n");
     }else{
         for(int i=r;i<p;i++){
             t[q]=s[i];
@@ -315,16 +311,15 @@ int main(int argc, char *argv[]){
     server->isSequential = false;
     server->numAgents = 8;
 
+    int num_iterations = 10000;
 
-    bTypes.push_back(true);
-    bTypes.push_back(true);
-    bTypes.push_back(true);
-    bTypes.push_back(true);
-    bTypes.push_back(true);
-    bTypes.push_back(true);
-    bTypes.push_back(true);
-    bTypes.push_back(true);
-    bTypes.push_back(true);
+    for(int i = 0; i < server->numAgents; i++){
+        if(i == 0){
+            bTypes.push_back(false);
+        }else{
+            bTypes.push_back(true);
+        }
+    }
 
 
     // Getting the auction type
@@ -337,24 +332,24 @@ int main(int argc, char *argv[]){
     if(!aType.compare("Ascending") || !aType.compare("A")){
         cout << "running ascending" << endl;
 
-        for(int i = 0; i < 10000; i++){
+        for(int i = 0; i < num_iterations; i++){
            totalSurplus += server->runAscending();
            if(fmod((double)i,(double)100) == 0){
                cout << "Iteration: " << i <<endl;
            }
         }
-        averageSurplus = totalSurplus/10000;
+        averageSurplus = totalSurplus/num_iterations;
         cout << "average Surplus: " <<averageSurplus << endl;
     }else{
-        //vector<float> surplus;
-        //float totalSurplus = 0;
-       // for(int i = 0; i<10000; i++){
+        vector<float> surplus;
+        float totalSurplus = 0;
+        for(int i = 0; i<num_iterations; i++){
             cout << "running sealed price" << endl;
             float s = server->runSealedPrice();
-       //     cout << "Agent 1's surplus: " << s << endl;
-       //     totalSurplus += s;
-       // }
-        //cout << "average surplus: " << totalSurplus/10000 << endl;
+            cout << "Agent 1's surplus: " << s << endl;
+            totalSurplus += s;
+        }
+        cout << "average surplus: " << totalSurplus/num_iterations << endl;
     }
 
 

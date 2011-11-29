@@ -49,7 +49,7 @@ void aAgent::predictPrice(){
 
 }
 vector<float> aAgent::bidSimultaneous(int numGoods, vector<int> currWinners, vector<float> winningPrices, vector<float> askPrices){
-    //cout << "round: " << round <<endl;
+
     if(round == 0){
         predictPrice();
     }
